@@ -3,7 +3,7 @@ Implementation of the paper [Interactive color image segmentation with linear pr
 
 ## How to start
 Currently, there is a single program called 'main.py'.<br>
-Go to your environment where python3 is installed and execute `python3 main.py`.<br>
+Go to the folder and launch a commandline environment where python3 is installed and execute `python3 main.py`.<br>
 If this fails, see if you have any package missing.<br>
 
 ## Additionally...
