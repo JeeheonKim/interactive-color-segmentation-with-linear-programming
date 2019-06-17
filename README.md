@@ -1,3 +1,3 @@
 # Interactive Color Segmentation with Linear Programming
-Implementation of the paper "Interactive color image segmentation with linear programming".  
+Implementation of the paper "Interactive color image segmentation with linear programming" by Hongdong Li and Chunhua Shen.  
 
