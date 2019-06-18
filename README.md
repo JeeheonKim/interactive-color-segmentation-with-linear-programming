@@ -1,10 +1,12 @@
 # Interactive Color Segmentation with Linear Programming
-Implementation of the paper [Interactive color image segmentation with linear programming](https://link.springer.com/article/10.1007/s00138-008-0171-x) by Hongdong Li and Chunhua Shen.  
+Implementation of the paper [Interactive color image segmentation with linear programming](https://link.springer.com/article/10.1007/s00138-008-0171-x) by Hongdong Li and Chunhua Shen
 
 ## How to start
 Currently, there is a single program called 'main.py'.<br>
-Go to the folder and launch a commandline environment where python3 is installed and execute `python3 main.py`.<br>
+Go to the folder and launch a commandline environment where python3 is installed and execute `python main.py`.<br>
 If this fails, see if you have any package missing.<br>
+
+You can change the jpg format image to explore more. <br>
 
 ## Additionally...
 This is program is based on a paper published in 2008. <br>
