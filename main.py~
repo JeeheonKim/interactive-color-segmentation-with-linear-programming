@@ -6,6 +6,7 @@ import time
 from skimage import color
 from sklearn import mixture 
 from scipy.spatial.distance import mahalanobis as mahal
+
 COLOR_FG = [255, 0, 0]
 COLOR_BG = [0, 255, 0]
 COLOR_BLACK = [0, 0, 0]
@@ -137,11 +138,18 @@ class InteractiveWindow:
         # Establish the LP formulation based on Eq.14
 
         # Solve the LP problem
-        processed = np.NaN
+        processed = self.lp_formulation(0.2, f_vec)
+
         return processed
 
-    def lp_formulation(self):
-        print("to be implemented")        
+    def lp_formulation(self, reg_param, f_vec):
+        print("to be implemented")
+        delta_mtx = self.compute_delta_distance(f_vec)
+        #user input - vectors
+
+
+
+
 
     def weight_calculation(self, f1, f2):
         a = (np.linalg.norm(f1-f2))**2
@@ -150,6 +158,8 @@ class InteractiveWindow:
         return a
 
     def sigma_calculation(self, f1, f2):
+        2* np.mean(np.power(np.absolute(f1-f2), 2)) 
+
 
     def idx2xy(self, idx):
         h, w, _ = self.cv_img.shape
