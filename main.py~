@@ -5,7 +5,7 @@ import numpy as np
 import time
 from skimage import color
 from sklearn import mixture 
-
+from scipy.spatial.distance import mahalanobis as mahal
 COLOR_FG = [255, 0, 0]
 COLOR_BG = [0, 255, 0]
 COLOR_BLACK = [0, 0, 0]
@@ -132,7 +132,8 @@ class InteractiveWindow:
                 
         # Compute the delta-distance 
         dist = self.compute_delta_distance(f_vec) 
-        print(dist)
+        print("Look at this to see if the calculation is reasonable")
+        print(dist.shape)
         # Establish the LP formulation based on Eq.14
 
         # Solve the LP problem
@@ -144,8 +145,11 @@ class InteractiveWindow:
 
     def weight_calculation(self, f1, f2):
         a = (np.linalg.norm(f1-f2))**2
-        sigma = 2.
-        np.exp(np.mul)
+        a = -a/(2*(sigma_calculation(f1,f2)**2))
+        a = np.exp(a)
+        return a
+
+    def sigma_calculation(self, f1, f2):
 
     def idx2xy(self, idx):
         h, w, _ = self.cv_img.shape
@@ -165,8 +169,15 @@ class InteractiveWindow:
         fg_means = gmm.means_
         fg_cov = gmm.covariances_
         
-        dist = 0
-
+        fg_dist = 0
+        bg_dist = 0
+        h, w, _ = self.cv_img.shape
+        dist = np.zeros([h, w])
+        for i in range(h):
+            for j in range(w):
+                b = np.min([mahal(x[i,j], bg_means[p], bg_cov[p]) for p in range(5)])
+                f = np.min([mahal(x[i,j], fg_means[p], fg_cov[p]) for p in range(5)])
+                dist[i,j] = b-f 
         return dist
 
     def compute_vec(self, x, color):
