@@ -132,6 +132,7 @@ class InteractiveWindow:
                 
         # Compute the delta-distance 
         dist = self.compute_delta_distance(f_vec) 
+        print(dist)
         # Establish the LP formulation based on Eq.14
 
         # Solve the LP problem
@@ -156,8 +157,13 @@ class InteractiveWindow:
         bg_x = self.compute_vec(x, COLOR_BG)
         fg_x = self.compute_vec(x, COLOR_FG)
         gmm = gmm.fit(bg_x)
-        print(gmm.means_)
-        print(gmm.covariacnes_)
+        bg_means = gmm.means_
+        bg_cov = gmm.covariances_
+        
+        gmm = mixture.GaussianMixture(n_components=GAUSS_MODE, covariance_type = 'full')
+        gmm = gmm.fit(fg_x)
+        fg_means = gmm.means_
+        fg_cov = gmm.covariances_
         
         dist = 0
 
@@ -169,13 +175,19 @@ class InteractiveWindow:
         for i in range(height):
             for j in range(width):
                 if (self.user_input[i,j][0] ==  color[0] and self.user_input[i,j][1] == color[1] and self.user_input[i,j][2] == color[2]):
-                    if result==np.NaN:
-                        print("in if statement")
-                        print(i,j)
+                    if np.isnan(result).all():
+                        #print("currently result is  NaN------")
+                        #print(i,j)
+                        #print("printing x[i,j]...")
+                        #print(x[i,j])
                         result = np.array([x[i,j]])
                     else:
-                        result = np.append(result, np.array([x[i,j]]), axis=0)
-        print("result is")
+                        #print("----------------")
+                        #print(result)
+                        #print("printing x[i,j]...")
+                        #print(x[i,j])
+                        result = np.append(np.array(result), np.array([x[i,j]]), axis=0)
+        print("result is--- this should contains arrays that have user interacted arraays")
         print(result)
         return result
 
