@@ -6,6 +6,7 @@ import time
 from skimage import color
 from sklearn import mixture 
 from scipy.spatial.distance import mahalanobis as mahal
+import gurobiby as grb
 
 COLOR_FG = [255, 0, 0]
 COLOR_BG = [0, 255, 0]
@@ -135,7 +136,11 @@ class InteractiveWindow:
         dist = self.compute_delta_distance(f_vec) 
         print("Look at this to see if the calculation is reasonable")
         print(dist.shape)
-        # Establish the LP formulation based on Eq.14
+          ={(i,j):opt_model.addVar(vtype=grb.GRB.CONTINUOUS, 
+                                      lb=l[i,j], 
+                                                              ub= u[i,j],
+                                                                                      name="x_{0}_{1}".format(i,j)) 
+                                                                                      for i in set_I for j in set_J}Establish the LP formulation based on Eq.1
 
         # Solve the LP problem
         processed = self.lp_formulation(0.2, f_vec)
@@ -146,10 +151,27 @@ class InteractiveWindow:
         print("to be implemented")
         delta_mtx = self.compute_delta_distance(f_vec)
         #user input - vectors
+        opt_model = grb.Model(name="MIP Model")
+        x_vars = {(i,j): opt_model.addVar(vtype=grb.GRB.CONTINUOUS,
+            lb = 0,
+            ub = 1,
+            name="x_{0}_{1}".format(i,j)) for i in range(self.cv_img[0]) for j in range(self.cv_img[1])}
+        delta = self.compute_delta_distance(f_vec)
+        objective = grb.quicksum(x_vars[i,j]*delta[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1]))
+        objective+= 0.3*grb.quicksum(computex_vars[i,j]*delta[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1]))+0.3*
+        opt_model.setObjectiveN(objective)
 
 
+        # for minimization
+        opt.model.ModelSense = grb.GRB.MINIMIZE
+        opt_model.optimize()
 
+        opt_df = pd.DataFrame.from_dict(x_vars, orient="index",
+                columns=["variable_object"])
+        opt_df.index = pd.MultiIndex.from_tuples(opt_df.index, names=["column_i","column_j"])
+        opt_df.reset_index(inplace=True)
 
+        opt_df["solution_value"]= opt_df["variable_object"].apply(lambda item: item.x)
 
     def weight_calculation(self, f1, f2):
         a = (np.linalg.norm(f1-f2))**2
