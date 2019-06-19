@@ -8,7 +8,7 @@ If this fails, see if you have any package missing.<br>
 
 You can change the sample image to explore more. <br>
 
-fyi. program contains lots of spaghetti code that requires lots of refactoring
+*fyi. program contains lots of spaghetti code that requires lots of refactoring*
 
 ## Additionally...
 This is program is based on a paper published in 2008. <br>
