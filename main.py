@@ -28,7 +28,7 @@ class InteractiveWindow:
         self.classify_button.grid(row=0, column=0, sticky=E+W)
         self.reset_button.grid(row=0, column=1, sticky=E+W)
         self.close_button.grid(row=0, column=2, sticky=E+W)
-        
+         
         #specify image
         self.cv_img = cv2.imread("nemo1.jpg")
         self.cv_img = cv2.cvtColor(self.cv_img, cv2.COLOR_BGR2RGB)
@@ -38,16 +38,15 @@ class InteractiveWindow:
         # Store user input
         self.user_input = np.zeros([height,width,3],dtype=np.uint8)
         self.user_input.fill(0)
-
+        self.fg_set=set()
+        self.bg_set=set()
         # Create a canvas that can fit the above image
         self.canvas = Canvas(master, width = width, height = height )
         self.canvas.grid(row=2,columnspan=3)
-        print(width, height) 
-        # Bind user interaction
-
+        
+        # Bind user interaction with GUI component
         self.canvas.bind("<Button-1>", self.canvas_onclick_fg)
         self.canvas.bind("<B1-Motion>", self.canvas_onclick_fg)
-        
         self.canvas.bind("<Button-3>", self.canvas_onclick_bg)
         self.canvas.bind("<B3-Motion>", self.canvas_onclick_bg)
 
@@ -64,7 +63,7 @@ class InteractiveWindow:
         # just overwrite pixels
         cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_FG,2)
         cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_FG,2)
-        
+        self.set.add((event.x, event.y,1))
         # Display on Window
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
         self.canvas.create_image(0,0, image=self.photo, anchor=NW)
@@ -75,7 +74,7 @@ class InteractiveWindow:
         # just overwrite pixels
         cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_BG,2)
         cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_BG,2)
-
+        self.set.add((event.x, event.y, 0))
         # Display on Window
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
         self.canvas.create_image(0,0, image=self.photo, anchor=NW)
@@ -91,9 +90,9 @@ class InteractiveWindow:
         
     def display_result(self, processed):
         # Output the label as the result
-        photo = ImageTk.PhotoImage(image = Image.fromarray(processed))
-        self.canvas.create_image(0,0, image=photo, anchor=NW)
-
+        #photo = ImageTk.PhotoImage(image = Image.fromarray(processed))
+        #self.canvas.create_image(0,0, image=photo, anchor=NW)
+        print("Done!")
 
 #### ALGORITHM
     def process_time(self):
@@ -104,7 +103,6 @@ class InteractiveWindow:
         display_result(self, processed)
 
     def process(self):
-
         # Algorithm described in the paper
         print("process needs to be implemented")
         height, width, no_channels = self.cv_img.shape 
@@ -136,11 +134,6 @@ class InteractiveWindow:
         dist = self.compute_delta_distance(f_vec) 
         print("Look at this to see if the calculation is reasonable")
         print(dist.shape)
-          ={(i,j):opt_model.addVar(vtype=grb.GRB.CONTINUOUS, 
-                                      lb=l[i,j], 
-                                                              ub= u[i,j],
-                                                                                      name="x_{0}_{1}".format(i,j)) 
-                                                                                      for i in set_I for j in set_J}Establish the LP formulation based on Eq.1
 
         # Solve the LP problem
         processed = self.lp_formulation(0.2, f_vec)
@@ -151,16 +144,22 @@ class InteractiveWindow:
         print("to be implemented")
         delta_mtx = self.compute_delta_distance(f_vec)
         #user input - vectors
-        opt_model = grb.Model(name="MIP Model")
+        opt_model = grb.Model(name="EnergyFunction")
+        # set variables for relaxed binary problem
         x_vars = {(i,j): opt_model.addVar(vtype=grb.GRB.CONTINUOUS,
             lb = 0,
             ub = 1,
             name="x_{0}_{1}".format(i,j)) for i in range(self.cv_img[0]) for j in range(self.cv_img[1])}
         delta = self.compute_delta_distance(f_vec)
-        objective = grb.quicksum(x_vars[i,j]*delta[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1]))
-        objective+= 0.3*grb.quicksum(computex_vars[i,j]*delta[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1]))+0.3*
-        opt_model.setObjectiveN(objective)
+        ## we need pixels that are colored by user input
 
+        for a in self.set:
+            # a has to be set to real numbers
+            objective = grb.quicksum(x_vars[i,j]*delta_mtx[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1]))
+            objective+= 0.3*grb.quicksum( compute_vars[i,j]*delta[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1])) 
+        
+        opt_model.setObjectiveN(objective)
+        
 
         # for minimization
         opt.model.ModelSense = grb.GRB.MINIMIZE
@@ -173,13 +172,15 @@ class InteractiveWindow:
 
         opt_df["solution_value"]= opt_df["variable_object"].apply(lambda item: item.x)
 
+    # Weight defined in paper -- can customize the function to change weight
     def weight_calculation(self, f1, f2):
         a = (np.linalg.norm(f1-f2))**2
-        a = -a/(2*(sigma_calculation(f1,f2)**2))
+        a = -a/(2*(_sigma_calculation(f1,f2)**2))
         a = np.exp(a)
         return a
 
-    def sigma_calculation(self, f1, f2):
+    
+    def _sigma_calculation(self, f1, f2):
         2* np.mean(np.power(np.absolute(f1-f2), 2)) 
 
 
@@ -188,10 +189,11 @@ class InteractiveWindow:
         y = idx%w
         x = idx//w
 
+    # Delta distance in paper
     def compute_delta_distance(self,x):
         gmm = mixture.GaussianMixture(n_components=GAUSS_MODE, covariance_type = 'full')
-        bg_x = self.compute_vec(x, COLOR_BG)
-        fg_x = self.compute_vec(x, COLOR_FG)
+        bg_x = self.compute_usr_input(x, COLOR_BG)
+        fg_x = self.compute_usr_input(x, COLOR_FG)
         gmm = gmm.fit(bg_x)
         bg_means = gmm.means_
         bg_cov = gmm.covariances_
@@ -212,7 +214,7 @@ class InteractiveWindow:
                 dist[i,j] = b-f 
         return dist
 
-    def compute_vec(self, x, color):
+    def compute_usr_input(self, x, color):
         height, width, no_channels = self.cv_img.shape 
         result = np.NaN
         for i in range(height):
