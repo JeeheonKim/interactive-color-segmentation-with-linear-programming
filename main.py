@@ -6,7 +6,7 @@ import time
 from skimage import color
 from sklearn import mixture 
 from scipy.spatial.distance import mahalanobis as mahal
-import gurobiby as grb
+import gurobipy as grb
 
 COLOR_FG = [255, 0, 0]
 COLOR_BG = [0, 255, 0]
@@ -38,8 +38,8 @@ class InteractiveWindow:
         # Store user input
         self.user_input = np.zeros([height,width,3],dtype=np.uint8)
         self.user_input.fill(0)
-        self.fg_set=set()
-        self.bg_set=set()
+        self.set=set()
+        
         # Create a canvas that can fit the above image
         self.canvas = Canvas(master, width = width, height = height )
         self.canvas.grid(row=2,columnspan=3)
@@ -79,7 +79,6 @@ class InteractiveWindow:
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
         self.canvas.create_image(0,0, image=self.photo, anchor=NW)
 
-
     def reset(self):
         """ Resets scribbles of the user
         
@@ -109,6 +108,9 @@ class InteractiveWindow:
         display_result(self, processed)
 
     def process(self):
+        """
+        process the image
+        """
         # Algorithm described in the paper
         print("process needs to be implemented")
         height, width, no_channels = self.cv_img.shape 
@@ -145,8 +147,12 @@ class InteractiveWindow:
         processed = self.lp_formulation(0.2, f_vec)
 
         return processed
+    #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     def lp_formulation(self, reg_param, f_vec):
+        """
+        formulates a linear programming problem mentioned in the paper
+        """
         print("to be implemented")
         delta_mtx = self.compute_delta_distance(f_vec)
         #user input - vectors
@@ -155,14 +161,14 @@ class InteractiveWindow:
         x_vars = {(i,j): opt_model.addVar(vtype=grb.GRB.CONTINUOUS,
             lb = 0,
             ub = 1,
-            name="x_{0}_{1}".format(i,j)) for i in range(self.cv_img[0]) for j in range(self.cv_img[1])}
-        delta = self.compute_delta_distance(f_vec)
+            name="x_{0}_{1}".format(i,j)) for i in range(self.cv_img.shape[0]) for j in range(self.cv_img.shape[1])}
         ## we need pixels that are colored by user input
 
         for a in self.set:
             # a has to be set to real numbers
-            objective = grb.quicksum(x_vars[i,j]*delta_mtx[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1]))
-            objective+= 0.3*grb.quicksum( compute_vars[i,j]*delta[i,j] for i in range(self.cv_img[0]) for j in range(self.cv_img[1])) 
+            objective = grb.quicksum(x_vars[i,j]*delta_mtx[i,j] for i in range(self.cv_img.shape[0]) for j in range(self.cv_img.shape[1]))
+            # NOT YET COMPLETE
+            objective+= reg_param*grb.quicksum( compute_vars[i,j]*delta_mtx[i,j] for i in range(self.cv_img.shape[0]) for j in range(self.cv_img.shape[1])) 
         
         opt_model.setObjectiveN(objective)
         
@@ -178,8 +184,17 @@ class InteractiveWindow:
 
         opt_df["solution_value"]= opt_df["variable_object"].apply(lambda item: item.x)
 
+
+    def neighbour_pixels_weight_for_feature(self, f1):
+        """Compute weights of a feature with four neighbouring pixel
+        Receives a set of features and output weights for a set
+        """
+
     # Weight defined in paper -- can customize the function to change weight
-    def weight_calculation(self, f1, f2):
+    def _weight_calculation(self, f1, f2):
+        """
+        weight of two feature vectors
+        """
         a = (np.linalg.norm(f1-f2))**2
         a = -a/(2*(_sigma_calculation(f1,f2)**2))
         a = np.exp(a)
@@ -188,12 +203,7 @@ class InteractiveWindow:
     
     def _sigma_calculation(self, f1, f2):
         2* np.mean(np.power(np.absolute(f1-f2), 2)) 
-
-
-    def idx2xy(self, idx):
-        h, w, _ = self.cv_img.shape
-        y = idx%w
-        x = idx//w
+    #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     # Delta distance in paper
     def compute_delta_distance(self,x):
@@ -219,28 +229,7 @@ class InteractiveWindow:
                 f = np.min([mahal(x[i,j], fg_means[p], fg_cov[p]) for p in range(5)])
                 dist[i,j] = b-f 
         return dist
-
-    def compute_usr_input(self, x, color):
-        height, width, no_channels = self.cv_img.shape 
-        result = np.NaN
-        for i in range(height):
-            for j in range(width):
-                if (self.user_input[i,j][0] ==  color[0] and self.user_input[i,j][1] == color[1] and self.user_input[i,j][2] == color[2]):
-                    if np.isnan(result).all():
-                        #print("currently result is  NaN------")
-                        #print(i,j)
-                        #print("printing x[i,j]...")
-                        #print(x[i,j])
-                        result = np.array([x[i,j]])
-                    else:
-                        #print("----------------")
-                        #print(result)
-                        #print("printing x[i,j]...")
-                        #print(x[i,j])
-                        result = np.append(np.array(result), np.array([x[i,j]]), axis=0)
-        print("result is--- this should contains arrays that have user interacted arraays")
-        print(result)
-        return result
+    #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 # Execution
 root = Tk()
