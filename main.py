@@ -81,6 +81,9 @@ class InteractiveWindow:
 
 
     def reset(self):
+        """ Resets scribbles of the user
+        
+        """
         self.cv_img = self.cv_img_copy.copy() #reset display
         self.user_input.fill(0) #reset user_input
 
@@ -96,6 +99,9 @@ class InteractiveWindow:
 
 #### ALGORITHM
     def process_time(self):
+        """
+        Calculate the time passed to test the efficiency of the algorithm
+        """
         start = time.time()
         processed = self.process()
         end = time.time()

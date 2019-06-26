@@ -1,6 +1,8 @@
 # Interactive Color Segmentation with Linear Programming
 Implementation of the paper [Interactive color image segmentation with linear programming](https://link.springer.com/article/10.1007/s00138-008-0171-x) by Hongdong Li and Chunhua Shen
 
+# STILL ONGOING, CURRENTLY THE PROGRAM WILL FAIL TO EXECUTE PROPERLY 
+
 ## List of packages
 Gurobi: can download for free if you are a studnet (or a professor)<br>
 tkinter: GUI helper<br>
