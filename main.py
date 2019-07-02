@@ -19,25 +19,16 @@ class InteractiveWindow:
 
          
         #specify image
-        self.cv_img = cv2.imread("nemo1.jpg")
-        self.cv_img = cv2.cvtColor(self.cv_img, cv2.COLOR_BGR2RGB)
-        height, width, no_channels = self.cv_img.shape 
-        self.cv_img_copy = self.cv_img.copy()
+        
 
         # Store user input
-        self.user_input = np.zeros([height,width,3],dtype=np.uint8)
-        self.user_input.fill(0)
-        self.set=set()
+       
         
         # Create a canvas that can fit the above image
-        self.canvas = Canvas(master, width = width, height = height )
-        self.canvas.grid(row=2,columnspan=3)
+
         
         # Bind user interaction with GUI component
-        self.canvas.bind("<Button-1>", self.canvas_onclick_fg)
-        self.canvas.bind("<B1-Motion>", self.canvas_onclick_fg)
-        self.canvas.bind("<Button-3>", self.canvas_onclick_bg)
-        self.canvas.bind("<B3-Motion>", self.canvas_onclick_bg)
+
 
         # Display on Window
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
@@ -72,22 +63,15 @@ class InteractiveWindow:
         cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_BG,2)
         self.set.add((event.x, event.y, 0))
 
-    def reset(self):
-        """ Resets scribbles of the user
-        
-        """
-        self.cv_img = self.cv_img_copy.copy() #reset display
+    def reset_scribble(self):
+        self.cv_img = self.cv_img_copy.copy()
         self.user_input.fill(0) #reset user_input
 
         # Display on Window
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
         self.canvas.create_image(0,0, image=self.photo, anchor=NW)
         
-    def display_result(self, processed):
-        # Output the label as the result
-        #photo = ImageTk.PhotoImage(image = Image.fromarray(processed))
-        #self.canvas.create_image(0,0, image=photo, anchor=NW)
-        print("Done!")
+
 
 #### ALGORITHM
     def process_time(self):
