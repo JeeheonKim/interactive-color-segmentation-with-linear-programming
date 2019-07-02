@@ -15,19 +15,8 @@ COLOR_WHITE = [255, 255, 255]
 GAUSS_MODE = 5
 
 class InteractiveWindow:
-    def __init__(self, master):
-        self.master = master
-        master.title("Interactive Demo")
+    def __init__(self, master):       
 
-        self.label = Label(master, text = "(Instruction) left/right click and drag")
-        self.label.grid(row=1,columnspan=3)
-
-        self.classify_button = Button(master, text = "Process!", command = self.process_time)
-        self.close_button = Button(master, text="Close", command=master.quit)
-        self.reset_button = Button(master, text="Reset", command=self.reset)
-        self.classify_button.grid(row=0, column=0, sticky=E+W)
-        self.reset_button.grid(row=0, column=1, sticky=E+W)
-        self.close_button.grid(row=0, column=2, sticky=E+W)
          
         #specify image
         self.cv_img = cv2.imread("nemo1.jpg")
@@ -59,25 +48,29 @@ class InteractiveWindow:
 #### USER INTERACTION
     def canvas_onclick_fg(self, event):
         self.label.config(text= "Foreground selection at ({},{})".format(event.x, event.y) )
-        
-        # just overwrite pixels
-        cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_FG,2)
-        cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_FG,2)
-        self.set.add((event.x, event.y,1))
+        record_user_input_foreground(event)
+
         # Display on Window
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
         self.canvas.create_image(0,0, image=self.photo, anchor=NW)
 
+    def record_user_input_foreground(self, event):
+        cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_FG,2)
+        cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_FG,2)
+        self.set.add((event.x, event.y,1))
+
     def canvas_onclick_bg(self, event):
         self.label.config(text= "Background selection at ({},{})".format(event.x, event.y) )
-        
         # just overwrite pixels
-        cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_BG,2)
-        cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_BG,2)
-        self.set.add((event.x, event.y, 0))
+        record_user_input_background()
         # Display on Window
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
         self.canvas.create_image(0,0, image=self.photo, anchor=NW)
+
+    def record_user_input_background(self, event):
+        cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_BG,2)
+        cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_BG,2)
+        self.set.add((event.x, event.y, 0))
 
     def reset(self):
         """ Resets scribbles of the user
