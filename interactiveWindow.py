@@ -2,16 +2,16 @@ from tkinter import *
 import linearAlgorithm
 
 class InteractiveWindow:
+	COLORS = [(255,0,0), (0,255,0)]
+
 	def __init__(self, master):
 		self.master = master
 		master.title("Interactive Demo")
 		propogate_components()
 		place_components()
-		self.img =[]
 		self.rawimg2array("nemo01.jpg")
  		self.user_input = np.zeros([height,width,3],dtype=np.uint8)
         self.set=set()
-
 
 
 	def rawimg2array(self, img):
@@ -32,6 +32,10 @@ class InteractiveWindow:
         self.canvas.bind("<Button-3>", self.canvas_onclick_bg)
         self.canvas.bind("<B3-Motion>", self.canvas_onclick_bg)
 
+    def propogate_canvas(self):
+    	height, width, _ = self.img.shape
+        self.canvas = Canvas(master, width = width, height = height )
+
     def place_components(self):
     	self.label.grid(row=1,columnspan=3)
 
@@ -41,53 +45,44 @@ class InteractiveWindow:
 
         place_canvas()
 
-    def propogate_canvas(self):
-    	height, width, _ = self.img.shape
-        self.canvas = Canvas(master, width = width, height = height )
-
     def place_canvas(self):
         self.canvas.grid(row=2,columnspan=3)
 
-    def mask(self, color):
+    def mask(self, color_number):
     	#mask the result image
 
         print("Done!")
 
     def reset_scribble(self):
+        self.cv_img = self.cv_img_copy.copy()
+        self.user_input.fill(0) #reset user_input
 
+        # Display on Window
+        self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
+        self.canvas.create_image(0,0, image=self.photo, anchor=NW)
+        
 
     def process_time(self):
         """
         Calculate the time passed to test the efficiency of the algorithm
         """
         start = time.time()
-        processed = linearAlgorithm.process(self) #supply information for info
+        processed = LinearAlgorithm.process(self) #supply information for info
         end = time.time()
         print("Elapsed time", end-start)
         display_result(self, processed)
 
-    def canvas_onclick_fg(self, event):
-        self.label.config(text= "Foreground selection at ({},{})".format(event.x, event.y) )
-        record_user_input_foreground(event)
+    # REMOVING FLAGS ARE BETTER BUT STILL
+    def canvas_onclick(self, event, color_number):
+        self.label.config(text= "Color {} selection at ({},{})".format(color_number, event.x, event.y) )
+        record_scribble(event, color_number)
 
         # Display on Window
         self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
         self.canvas.create_image(0,0, image=self.photo, anchor=NW)
 
-    def record_user_input_foreground(self, event):
-        cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_FG,2)
-        cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_FG,2)
-        self.set.add((event.x, event.y,1))
-
-    def canvas_onclick_bg(self, event):
-        self.label.config(text= "Background selection at ({},{})".format(event.x, event.y) )
-        # just overwrite pixels
-        record_user_input_background()
-        # Display on Window
-        self.photo = ImageTk.PhotoImage(image = Image.fromarray(self.cv_img))
-        self.canvas.create_image(0,0, image=self.photo, anchor=NW)
-
-    def record_user_input_background(self, event):
-        cv2.circle(self.user_input, (event.x, event.y), 2, COLOR_BG,2)
-        cv2.circle(self.cv_img, (event.x, event.y), 2, COLOR_BG,2)
-        self.set.add((event.x, event.y, 0))
+    def record_scribble(self, event, color_number):
+    	#only tags are different
+        cv2.circle(self.user_input, (event.x, event.y), 2, COLORS[color_number],2)
+        cv2.circle(self.cv_img, (event.x, event.y), 2, COLORS[color_number],2)
+        #self.set.add((event.x, event.y,1)) -- better to put this after done
