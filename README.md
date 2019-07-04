@@ -3,7 +3,8 @@ Implementation of the paper [Interactive color image segmentation with linear pr
 
 # STILL ONGOING, CURRENTLY THE PROGRAM WILL FAIL TO EXECUTE PROPERLY 
 
-## List of packages
+## Dependencies
+`
 Gurobi: can download for free if you are a studnet (or a professor)<br>
 tkinter: GUI helper<br>
 cv2: image <br>
@@ -11,11 +12,12 @@ numpy: essential for python users learning data science <br>
 scipy <br>
 sklearn <br>
 skimage <br>
+`
 
 ## How to start
 Currently, there is a single program called 'main.py'.<br>
 Go to the folder and launch a commandline environment where python3 is installed and execute `python main.py`.<br>
-If this fails, see if you have any package missing. (listed above) <br>
+If this fails, see if you have any dependency missing. (listed above) <br>
 
 You can change the sample image to explore more. <br>
 
