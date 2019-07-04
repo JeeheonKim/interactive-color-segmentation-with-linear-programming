@@ -11,11 +11,12 @@ cv2: image
 numpy: essential for python users learning data science
 scipy
 sklearn
-skimage <br>
+skimage
 ````
 
 ## How to start
-Currently, there is a single program called 'main.py'.<br>
+On your cmd type,
+`git clone https://github.com/JeeheonKim/interactive-color-segmentation-with-linear-programming`
 Go to the folder and launch a commandline environment where python3 is installed and execute `python main.py`.<br>
 If this fails, see if you have any dependency missing. (listed above) <br>
 
