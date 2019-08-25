@@ -22,7 +22,8 @@ You can change the sample image to explore more. <br>
 
 *fyi. program contains lots of spaghetti code that requires lots of refactoring*
 
-## Additionally...
+## To finalize
 This is program is based on a paper published in 2008. <br>
 It is less likely that you will get the optimal solution from this program. <br>
-Written for studying purpose
+
+I would love to know algorithms that have flexibility and low time-complexity as the algorithm mentioned in the paper.
