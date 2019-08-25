@@ -1,17 +1,18 @@
-# Interactive Color Segmentation with Linear Programming
-Implementation of the paper [Interactive color image segmentation with linear programming](https://link.springer.com/article/10.1007/s00138-008-0171-x) 
-
 # STILL ONGOING, CURRENTLY THE PROGRAM WILL FAIL TO EXECUTE PROPERLY 
 I tried to use MVC model to improve the readability and reusability of the code.<br>
 
-## List of packages
-Gurobi: can download for free if you are a studnet (or a professor)<br>
+# Interactive Color Segmentation with Linear Programming
+Implementation of the paper [Interactive color image segmentation with linear programming](https://link.springer.com/article/10.1007/s00138-008-0171-x) 
+
+## prerequisite
+### List of packages
+Gurobi: can download for free if you are a student <br>
 tkinter: GUI helper<br>
 cv2: image <br>
 numpy: essential for python users learning data science <br>
-scipy <br>
-sklearn <br>
-skimage <br>
+scipy:  <br>
+sklearn: <br>
+skimage: <br>
 
 ## How to start
 Currently, there is a single program called 'main.py'.<br>
