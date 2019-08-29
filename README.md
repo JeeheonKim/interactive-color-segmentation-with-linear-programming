@@ -1,4 +1,3 @@
-# STILL ONGOING, CURRENTLY THE PROGRAM WILL FAIL TO EXECUTE PROPERLY 
 I tried to use MVC model to improve the readability and reusability of the code.<br>
 
 # Interactive Color Segmentation with Linear Programming
