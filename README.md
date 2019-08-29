@@ -4,10 +4,9 @@ I tried to use MVC model to improve the readability and reusability of the code.
 # Interactive Color Segmentation with Linear Programming
 Implementation of the paper [Interactive color image segmentation with linear programming](https://link.springer.com/article/10.1007/s00138-008-0171-x) 
 
-## prerequisite
-### List of packages
+## Prerequisite
 - Gurobi: The Gurobi Optimizer is a commercial optimization solver for linear programming, quadratic programming, quadratically constrained programming, mixed integer linear programming, etc. <br>
-How to install gurobi in Anaconda environment [here](https://www.gurobi.com/get-anaconda/)
+*How to install gurobi in Anaconda environment [here](https://www.gurobi.com/get-anaconda/)*
 - tkinter: GUI helper<br>
 - cv2: image <br>
 - numpy: essential for python users learning data science <br>
