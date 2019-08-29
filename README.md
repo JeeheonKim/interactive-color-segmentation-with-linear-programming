@@ -6,13 +6,14 @@ Implementation of the paper [Interactive color image segmentation with linear pr
 
 ## prerequisite
 ### List of packages
-Gurobi: can download for free if you are a student <br>
-tkinter: GUI helper<br>
-cv2: image <br>
-numpy: essential for python users learning data science <br>
-scipy:  <br>
-sklearn: <br>
-skimage: <br>
+- Gurobi: The Gurobi Optimizer is a commercial optimization solver for linear programming, quadratic programming, quadratically constrained programming, mixed integer linear programming, etc. <br>
+How to install gurobi in Anaconda environment [here](https://www.gurobi.com/get-anaconda/)
+- tkinter: GUI helper<br>
+- cv2: image <br>
+- numpy: essential for python users learning data science <br>
+- scipy:  <br>
+- sklearn: <br>
+- skimage: <br>
 
 ## How to start
 Currently, there is a single program called 'main.py'.<br>
